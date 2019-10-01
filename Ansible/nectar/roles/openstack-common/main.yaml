@@ -1,0 +1,42 @@
+# this file is for installing dependencies on the host
+
+# sudo apt-get update: sudo apt-get install python-pip
+- name: Install pip
+  become: yes
+  apt:
+    name: ['python-pip']
+    state: latest
+    update_cache: yes
+  when: ansible_distribution == "Ubuntu"
+
+# pip install -- upgrade pip
+- name: Update pip
+  become: yes
+  pip:
+    name: ['pip']
+    state: latest
+
+# pip install openstacksdk, required for the interaction with openstack API
+- name: Install openstacksdk
+  become: yes
+  pip:
+    name: ['openstacksdk']
+    state: latest
+       
+- name: Install git
+  become: yes
+  pip:
+    name: ['git']
+    state: latest
+
+- name: Install ansible
+  become: yes
+  pip:
+    name: ['ansible']
+    state: latest
+
+- name: Install docker
+  become: yes
+  pip:
+    name: ['docker']
+    state: latest

@@ -1,0 +1,62 @@
+# translating the commands that put in command line into Ansible playbook
+
+- name: Uninstall old version of docker
+  tags: 'docker'
+  become: yes
+  apt:
+    name: ['docker', 'docker-engine', 'docker.io']
+    state: absent
+
+- name: Install dependencies
+  tags: 'docker'
+  become: yes
+  apt:
+    name: ['apt-transport-https', 'ca-certificates', 'curl', 'python-setuptools', 'software-properties-common', 'cron', 'gnupg2', 'aptitude']
+    state: latest
+    install_recommends: no
+    update_cache: yes
+
+- name: Add docker apt repository key
+  tags: 'docker'
+  become: yes
+  apt_key:
+    url: https://download.docker.com/linux/ubuntu/gpg
+    state: present
+
+- name: add docker apt repository and update apt cache
+  tags: 'docker'
+  become: yes
+  apt_repository: 
+    repo: "deb https://download.docker.com/linux/{{ ansible_distribution|lower }} {{ ansible_distribution_release }} {{ ansible_distribution_version }} "
+    mode: '644'
+    update_cache: yes
+    state: present
+
+- name: Install docker
+  tags: 'docker'
+  become: yes
+  apt:
+    name: ['docker.io']
+    state: latest
+    install_recommends: no
+    update_cache: yes
+
+- name: Install docker-compose
+  tags: 'docker'
+  become: yes
+  pip:
+    name: ['docker-compose']
+    version: 1.22.0
+    state: present
+
+- name: add proxy to docker environment
+  lineinfile:
+    dest: /etc/default/docker
+    regexp: '^\n'
+    insertafter: '^\n'
+    line: "{{ item.line }}" 
+  with_items:
+    - { line: 'http_proxy="http://wwwproxy.unimelb.edu.au:8000"' }
+    - { line: 'https_proxy="http://wwwproxy.unimelb.edu.au:8000"' } 
+    - { line: 'ftp_proxy="http://wwwproxy.unimelb.edu.au:8000"' }
+    - { line: 'no_proxy=localhost,127.0.0.1,127.0.1.1,ubuntu' }

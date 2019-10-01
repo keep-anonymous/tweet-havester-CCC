@@ -1,0 +1,8 @@
+# define the device and mounting point of volumes
+# volume
+volumes:
+  - device: /dev/vdb
+    mountpoint: /data
+
+# define the working directory
+web_directory: /home/ubuntu/ccc-assignment2-team69/web_app_django/
